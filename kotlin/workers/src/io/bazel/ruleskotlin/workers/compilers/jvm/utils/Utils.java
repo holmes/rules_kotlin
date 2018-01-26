@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class Utils {
     public static List<String> waitForOutput(String[] command, PrintStream err) {
@@ -66,11 +67,11 @@ public final class Utils {
 
 
     public static void deleteDirectory(Path directory) throws IOException {
-        Files.walk(directory)
-                .map(Path::toFile)
+        try (Stream<Path> stream = Files.walk(directory)) {
+            stream.map(Path::toFile)
                 .sorted((o1, o2) -> -o1.compareTo(o2))
                 .forEach(File::delete);
-
+        }
     }
 
     public static Throwable getRootCause(Throwable e) {
